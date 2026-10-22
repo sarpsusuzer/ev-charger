@@ -185,7 +185,9 @@ html.is-touch .status-bar { display: none; }
   transition: transform .5s var(--ease);
 }
 .sheet-group > * { pointer-events: auto; }
-.screen-map[data-mode="detail"] .sheet-group { transform: translateY(-265px); }
+/* --lift-* raise the sheets just enough to clear the home indicator (0 on desktop / at Figma size). */
+.sheet-group { transform: translateY(calc(-1 * var(--lift-map, 0px))); }
+.screen-map[data-mode="detail"] .sheet-group { transform: translateY(calc(-265px - var(--lift-detail, 0px))); }
 
 .dock {
   position: absolute; left: 0; bottom: 72px; width: 393px; height: 246px;
@@ -283,7 +285,7 @@ html.is-touch .status-bar { display: none; }
 @keyframes flash { 0% { opacity: .35; } 100% { opacity: 0; } }
 @keyframes lock { 40% { transform: scale(.94); } }
 
-.scan-sheet { bottom: -82px; height: 277px; transition: bottom .45s var(--ease); }
+.scan-sheet { bottom: -82px; height: calc(277px + var(--lift-scan, 0px)); transition: bottom .45s var(--ease); }
 .screen-scan[data-filled="true"] .scan-sheet { bottom: 0; }
 .scan-sheet .identity { position: absolute; left: 19px; top: 20px; width: 354px; }
 .scan-sheet .identity .sub { color: var(--ink); }
@@ -337,7 +339,14 @@ html.is-touch .status-bar { display: none; }
 .stat span { font-size: 14px; line-height: 20px; letter-spacing: -0.084px; color: #868686; }
 .stat strong { font-weight: 500; font-size: 20px; line-height: 28px; color: #fff; font-variant-numeric: tabular-nums; }
 
-.charge-sheet { bottom: 0; height: 267px; }
+.charge-sheet { bottom: 0; height: calc(267px + var(--lift-charge, 0px)); }
 .cost, .location { display: flex; flex-direction: column; gap: 2px; }
 .rule { display: block; width: 354px; height: 1px; }
 @property --veil { syntax: "<number>"; inherits: false; initial-value: 0; }
+
+/* Reads the device's real visible area and safe-area insets for fit(). */
+.vp-probe {
+  position: fixed; inset: 0; z-index: -1;
+  visibility: hidden; pointer-events: none;
+  padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}

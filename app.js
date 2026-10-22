@@ -280,24 +280,46 @@ $$('#route-list button').forEach(b => b.addEventListener('click', () => go(b.dat
 
 /* ---------- Fit ---------- */
 // Desktop: the 393×852 Figma frame, scaled down if the window is short.
-// Phone / home-screen app: width maps to 393 and the screen height becomes the
-// frame height, so top UI stays put and the sheets sit on the real bottom edge.
+// Phone / home-screen app: width maps to 393 and the real visible height becomes
+// the frame height, so top UI stays put and the sheets sit on the real bottom edge.
 const touch = matchMedia('(pointer: coarse)');
+const probe = $('#vp-probe');
+// Gap Figma leaves under each screen's bottom button; anything smaller than the
+// home-indicator inset gets lifted.
+const BOTTOM_GAP = { map: 36, detail: 31, scan: 31, charge: 18 };
+// ?safe=top,bottom fakes safe-area insets for testing in a desktop browser.
+const fakeSafe = new URLSearchParams(location.search).get('safe')?.split(',').map(Number);
+
 function fit() {
-  const app = innerWidth <= 760;
+  // The probe is position:fixed inset:0, so it measures what is actually on screen —
+  // more reliable than innerHeight on an iOS home-screen launch.
+  const box = probe.getBoundingClientRect();
+  const vw = box.width || innerWidth;
+  const vh = box.height || innerHeight;
+  const app = vw <= 760;
   root.classList.toggle('is-app', app);
   root.classList.toggle('is-touch', app && touch.matches);
+
   let h = 852;
+  let safeBottom = 0;
   if (app) {
-    scale = innerWidth / 393;
-    h = innerHeight / scale;
+    scale = vw / 393;
+    h = vh / scale;
+    const cs = getComputedStyle(probe);
+    safeBottom = (fakeSafe ? fakeSafe[1] : parseFloat(cs.paddingBottom) || 0) / scale;
   } else {
-    scale = Math.min(1, (innerHeight - 64) / 852);
+    scale = Math.min(1, (vh - 64) / 852);
   }
+  const lift = gap => `${Math.max(0, safeBottom - gap)}px`;
   phone.style.setProperty('--h', `${h}px`);
-  // Short screens (e.g. iPhone SE): fit the charging stats above the 267px sheet,
+  phone.style.setProperty('--lift-map', lift(BOTTOM_GAP.map));
+  phone.style.setProperty('--lift-detail', lift(BOTTOM_GAP.detail));
+  phone.style.setProperty('--lift-scan', lift(BOTTOM_GAP.scan));
+  phone.style.setProperty('--lift-charge', lift(BOTTOM_GAP.charge));
+  // Short screens (e.g. iPhone SE): fit the charging stats above the bottom sheet,
   // and lift the scan window clear of the filled ID sheet.
-  phone.style.setProperty('--charge-k', Math.min(1, (h - 267 - 12) / 565).toFixed(3));
+  const chargeSheet = 267 + Math.max(0, safeBottom - BOTTOM_GAP.charge);
+  phone.style.setProperty('--charge-k', Math.min(1, (h - chargeSheet - 12) / 565).toFixed(3));
   phone.style.setProperty('--scan-shift', `${Math.max(0, (852 - h) * 0.6)}px`);
   phone.style.transformOrigin = 'top left';
   phone.style.transform = scale === 1 ? '' : `scale(${scale})`;
@@ -305,7 +327,11 @@ function fit() {
   phone.parentElement.style.height = `${h * scale}px`;
 }
 window.addEventListener('resize', fit);
+window.visualViewport?.addEventListener('resize', fit);
 window.addEventListener('orientationchange', () => setTimeout(fit, 250));
+// iOS can settle the standalone viewport a moment after launch or when resumed.
+window.addEventListener('pageshow', () => { fit(); setTimeout(fit, 300); });
+window.addEventListener('load', () => setTimeout(fit, 300));
 
 // ?v=<variant> opens the map in a given station state (handy for sharing a state).
 const startVariant = new URLSearchParams(location.search).get('v');
