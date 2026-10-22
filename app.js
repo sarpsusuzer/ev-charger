@@ -284,7 +284,6 @@ $$('#route-list button').forEach(b => b.addEventListener('click', () => go(b.dat
 // the frame height, so top UI stays put and the sheets sit on the real bottom edge.
 const touch = matchMedia('(pointer: coarse)');
 const probe = $('#vp-probe');
-const standalone = matchMedia('(display-mode: standalone)');
 // Gap Figma leaves under each screen's bottom button; anything smaller than the
 // home-indicator inset gets lifted.
 const BOTTOM_GAP = { map: 36, detail: 31, scan: 31, charge: 18 };
@@ -296,18 +295,13 @@ function fit() {
   // more reliable than innerHeight on an iOS home-screen launch.
   const box = probe.getBoundingClientRect();
   const vw = box.width || innerWidth;
-  let vh = box.height || innerHeight;
-  // iOS home-screen apps that draw under the status bar still lay out at
-  // screen height minus the status bar, leaving a black strip at the bottom.
-  // Standalone always fills the whole screen, so use the screen's own height.
-  if (standalone.matches || navigator.standalone) {
-    const portrait = innerHeight >= innerWidth;
-    vh = Math.max(vh, portrait ? screen.height : screen.width);
-  }
-  root.style.setProperty('--app-h', `${vh}px`);
+  const vh = box.height || innerHeight;
   const app = vw <= 760;
   root.classList.toggle('is-app', app);
   root.classList.toggle('is-touch', app && touch.matches);
+  // On a phone the real status bar sits above the page (status-bar-style
+  // "default"), so the design's 50px status strip is cut from the top.
+  const topCut = app && touch.matches ? 50 : 0;
 
   let h = 852;
   let safeBottom = 0;
@@ -328,8 +322,9 @@ function fit() {
   // Short screens (e.g. iPhone SE): fit the charging stats above the bottom sheet,
   // and lift the scan window clear of the filled ID sheet.
   const chargeSheet = 267 + Math.max(0, safeBottom - BOTTOM_GAP.charge);
-  phone.style.setProperty('--charge-k', Math.min(1, (h - chargeSheet - 12) / 565).toFixed(3));
-  phone.style.setProperty('--scan-shift', `${Math.max(0, (852 - h) * 0.6)}px`);
+  phone.style.setProperty('--top-cut', `${topCut}px`);
+  phone.style.setProperty('--charge-k', Math.min(1, (h - chargeSheet - 12) / (565 - topCut)).toFixed(3));
+  phone.style.setProperty('--scan-shift', `${Math.max(0, (852 - topCut - h) * 0.6)}px`);
   phone.style.transformOrigin = 'top left';
   phone.style.transform = scale === 1 ? '' : `scale(${scale})`;
   phone.parentElement.style.width = `${393 * scale}px`;

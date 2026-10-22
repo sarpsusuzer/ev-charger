@@ -57,9 +57,7 @@ body {
 
 /* App mode: on a phone (or as a home-screen web app) the frame becomes the whole screen. */
 html.is-app, html.is-app body {
-  /* --app-h is set by fit(); in a home-screen launch iOS under-reports the height. */
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--app-h, 100%);
+  position: fixed; inset: 0;
   overflow: hidden;
   overscroll-behavior: none;
   background: #000;
@@ -75,7 +73,8 @@ html.is-app body {
   touch-action: manipulation;
 }
 html.is-app input { -webkit-user-select: text; user-select: text; }
-/* The device draws its own status bar. */
+/* The device draws its own status bar above the page, so the design's 50px
+   status strip is dropped: --top-cut pulls top-anchored UI up by that much. */
 html.is-touch .status-bar { display: none; }
 
 /* ---------- Shared ---------- */
@@ -146,7 +145,7 @@ html.is-touch .status-bar { display: none; }
 .i-battery { width: 28.409px; height: 20.455px; }
 
 /* ---------- Map screen ---------- */
-.map-layer { position: absolute; inset: 0; touch-action: none; will-change: transform; }
+.map-layer { position: absolute; inset: 0; top: calc(-1 * var(--top-cut, 0px)); touch-action: none; will-change: transform; }
 .map-img { position: absolute; left: -218px; top: 0; width: 869px; height: max(852px, 100%); object-fit: cover; object-position: top; -webkit-user-drag: none; }
 .map-shade {
   position: absolute; left: -218px; top: 0; width: 869px; height: 134px;
@@ -251,7 +250,7 @@ html.is-touch .status-bar { display: none; }
 .pricing .fine { font-size: 12px; line-height: 16px; color: var(--sub); }
 
 .search {
-  position: absolute; left: 19px; top: 66px; width: 354px; height: 50px;
+  position: absolute; left: 19px; top: calc(66px - var(--top-cut, 0px)); width: 354px; height: 50px;
   display: flex; align-items: center; gap: 10px; padding: 14px;
   background: var(--weak); border-radius: 16px;
   box-shadow: 0 2px 16px rgba(0,0,0,.06);
@@ -277,7 +276,7 @@ html.is-touch .status-bar { display: none; }
 .dim-bottom { left: 1px; top: calc(491px - var(--scan-shift, 0px)); bottom: 59px; width: 390px; }
 .dim-right { left: 297px; top: calc(289px - var(--scan-shift, 0px)); width: 94px; height: 202px; }
 .dim-left { left: 0; top: calc(289px - var(--scan-shift, 0px)); width: 94px; height: 202px; }
-.scan-copy { position: absolute; left: 19px; top: 90px; width: 354px; display: flex; flex-direction: column; gap: 6px; color: #fff; }
+.scan-copy { position: absolute; left: 19px; top: calc(90px - var(--top-cut, 0px)); width: 354px; display: flex; flex-direction: column; gap: 6px; color: #fff; }
 .scan-copy .sub { color: #fff; }
 .scan-target { position: absolute; left: 95px; top: calc(289px - var(--scan-shift, 0px)); width: 202px; height: 202px; }
 .scan-target img { position: absolute; inset: -0.99%; width: 102%; height: 102%; }
@@ -305,7 +304,11 @@ html.is-touch .status-bar { display: none; }
 
 /* ---------- Charging screen ---------- */
 /* --charge-k shrinks ring + stats on short phones so they clear the bottom sheet (1 at 852). */
-.charge-top { position: absolute; inset: 0; transform: scale(var(--charge-k, 1)); transform-origin: 50% 0; }
+.charge-top {
+  position: absolute; inset: 0;
+  transform: translateY(calc(-1 * var(--top-cut, 0px))) scale(var(--charge-k, 1));
+  transform-origin: 50% var(--top-cut, 0px);
+}
 .charge-bg { position: absolute; left: 0; top: -23px; bottom: 72px; width: 393px; background: var(--night); border-radius: 24px 24px 0 0; }
 .charge-title {
   position: absolute; left: 19px; top: 63px; width: 354px; text-align: center;
