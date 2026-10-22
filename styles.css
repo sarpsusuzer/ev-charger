@@ -1,0 +1,343 @@
+/* Values are taken 1:1 from Figma "Concept-Designs" › Section 1 (node 1380:3408). */
+:root {
+  --lime: #d6f45b;
+  --lime-soft: #f3f9dd;
+  --ink: #14211e;
+  --sub: #525866;
+  --strong: #0e121b;
+  --stroke: #e1e4ea;
+  --weak: #f5f7fa;
+  --night: #1b1b1b;
+  --red: #f45b5b;
+  --ease: cubic-bezier(.32, .72, 0, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input { font: inherit; }
+
+body {
+  min-height: 100vh;
+  background: #2c2c2c;
+  font-family: "Inter", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  padding: 32px;
+  color: #fff;
+}
+
+/* ---------- Prototype panel ---------- */
+.panel { width: 220px; align-self: center; }
+.panel h1 { font-size: 20px; font-weight: 500; line-height: 28px; }
+.panel-note { font-size: 12px; color: #8a8a8a; margin-top: 2px; }
+.panel h2 { font-size: 11px; font-weight: 500; letter-spacing: .06em; text-transform: uppercase; color: #8a8a8a; margin: 28px 0 8px; }
+.panel ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+.panel li button {
+  width: 100%; text-align: left; font-size: 13px; line-height: 18px;
+  padding: 7px 10px; border-radius: 8px; color: #cfcfcf;
+}
+.panel li button:hover { background: rgba(255,255,255,.06); }
+.panel li button[aria-current="true"] { background: rgba(214,244,91,.14); color: var(--lime); }
+
+.stage { flex: none; }
+.phone {
+  position: relative;
+  width: 393px;
+  height: var(--h, 852px);
+  overflow: hidden;
+  background: #fff;
+  border-radius: 44px;
+  box-shadow: 0 0 0 10px #0d0d0d, 0 30px 80px rgba(0,0,0,.5);
+  transform-origin: center;
+  color: var(--ink);
+}
+
+/* App mode: on a phone (or as a home-screen web app) the frame becomes the whole screen. */
+html.is-app, html.is-app body {
+  position: fixed; inset: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+  background: #000;
+}
+html.is-app body { display: block; padding: 0; }
+html.is-app .panel { display: none; }
+html.is-app .phone { box-shadow: none; border-radius: 0; }
+html.is-app body {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+html.is-app input { -webkit-user-select: text; user-select: text; }
+/* The device draws its own status bar. */
+html.is-touch .status-bar { display: none; }
+
+/* ---------- Shared ---------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  visibility: hidden;
+  background: #fff;
+}
+.screen.is-active { visibility: visible; }
+/* Dims the screen underneath during a push/pop, like a native navigation stack. */
+.screen::after {
+  content: ""; position: absolute; inset: 0; z-index: 30;
+  background: #000; opacity: var(--veil, 0); pointer-events: none;
+}
+
+.title { font-weight: 500; font-size: 20px; line-height: 28px; white-space: nowrap; }
+.sub { font-size: 14px; line-height: 20px; letter-spacing: -0.084px; color: var(--sub); }
+.identity { display: flex; flex-direction: column; gap: 6px; }
+.price-row { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+.price { font-weight: 500; font-size: 24px; line-height: 32px; letter-spacing: -0.36px; }
+
+.sheet {
+  position: absolute;
+  left: 0;
+  width: 393px;
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -1px 17.2px rgba(0,0,0,.12);
+  overflow: hidden;
+}
+.sheet-inner {
+  position: absolute;
+  left: 19px;
+  top: 23px;
+  width: 354px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.action {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 54px; flex: none;
+  border-radius: 12px;
+  background: var(--lime);
+  color: var(--ink);
+  font-weight: 500; font-size: 16px; line-height: 24px; letter-spacing: -0.176px;
+  transition: transform .15s ease, filter .15s ease, opacity .25s ease;
+}
+@media (hover: hover) { .action:hover { filter: brightness(.97); } }
+.action:active { transform: scale(.98); }
+.action.is-outline { background: transparent; border: 1px solid var(--ink); }
+
+/* ---------- Status bar ---------- */
+.status-bar {
+  position: absolute; z-index: 20;
+  left: 14px; top: 0; width: 365px; height: 50px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 27.273px 0 31.818px;
+  pointer-events: none;
+}
+.status-bar .time { font-weight: 600; font-size: 17.045px; color: #000; transition: color .32s; }
+.status-bar.is-light .time { color: #fff; }
+.status-bar .icons { display: flex; gap: 5.682px; align-items: flex-start; }
+.i-signal, .i-wifi { width: 20.455px; height: 20.455px; }
+.i-battery { width: 28.409px; height: 20.455px; }
+
+/* ---------- Map screen ---------- */
+.map-layer { position: absolute; inset: 0; touch-action: none; will-change: transform; }
+.map-img { position: absolute; left: -218px; top: 0; width: 869px; height: max(852px, 100%); object-fit: cover; object-position: top; -webkit-user-drag: none; }
+.map-shade {
+  position: absolute; left: -218px; top: 0; width: 869px; height: 134px;
+  background: linear-gradient(179.456deg, rgba(0,0,0,.2) 1.3513%, rgba(0,0,0,0) 98.645%);
+}
+
+.pin {
+  position: absolute;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 2px solid #fff;
+  border-radius: 200px;
+  background: var(--lime);
+  box-shadow: 0 16px 32px -12px rgba(14,18,27,.1);
+  font-weight: 600; font-size: 14px; color: var(--ink); line-height: normal;
+  transition: transform .2s var(--ease);
+}
+.pin img { width: 16px; height: 16px; flex: none; }
+.pin span { flex: none; }
+@media (hover: hover) { .pin:hover { transform: scale(1.08); } }
+.pin:active { transform: scale(.92); }
+.pin-off { background: #d2d2d2; color: #7d7d7d; }
+.pin-lg {
+  width: 58px; height: 58px;
+  padding: 0 16.111px;
+  border-width: 3.222px;
+  border-radius: 322.222px;
+  box-shadow: 0 25.778px 51.556px -19.333px rgba(14,18,27,.1);
+  font-size: 22.556px;
+}
+.pin-lg img { width: 25.778px; height: 25.778px; }
+
+.sheet-group {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  transition: transform .5s var(--ease);
+}
+.sheet-group > * { pointer-events: auto; }
+.screen-map[data-mode="detail"] .sheet-group { transform: translateY(-265px); }
+
+.dock {
+  position: absolute; left: 0; bottom: 72px; width: 393px; height: 246px;
+  background: var(--night);
+  border-radius: 24px 24px 0 0;
+  filter: drop-shadow(0 -24px 11.7px rgba(0,0,0,.12));
+}
+.badges { position: absolute; left: 22px; top: 17px; display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.badge {
+  display: flex; align-items: center; gap: 5px;
+  padding: 5px 9px; border-radius: 8px;
+  font-weight: 500; font-size: 12px; line-height: 16px; white-space: nowrap;
+  transition: background-color .25s;
+}
+.badge img { width: 14px; height: 14px; }
+.badge-avail { background: var(--lime); color: var(--ink); }
+.badge-spec { background: rgba(245,247,250,.3); color: #fff; }
+.screen-map[data-variant="none"] .badge-avail { background: var(--red); }
+
+.charger-ac, .charger-dc { position: absolute; object-fit: cover; transition: opacity .25s; }
+.charger-ac { left: 139px; top: -30px; width: 146px; height: 146px; }
+.charger-dc { left: 167px; bottom: 111px; width: 276px; height: 276px; }
+.screen-map[data-variant="ac"] .charger-ac { left: 203px; top: -52px; width: 190px; height: 190px; }
+.screen-map[data-variant="dc"] .charger-dc { left: 160px; }
+
+.station-sheet { bottom: -317px; height: 544px; touch-action: none; }
+.station-sheet .identity { cursor: pointer; }
+.detail-body { display: none; }
+.preview-body, .detail-body { flex-direction: column; gap: 14px; }
+.preview-body { display: flex; }
+.screen-map[data-mode="detail"] .preview-body { display: none; }
+.screen-map[data-mode="detail"] .detail-body { display: flex; animation: rise .4s var(--ease) both; }
+.screen-map[data-mode="preview"] .preview-body { animation: rise .4s var(--ease) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } }
+
+.bays { display: flex; gap: 8px; }
+.bay {
+  position: relative; flex: 1 0 0; min-width: 1px; height: 121px;
+  padding: 10px; border-radius: 10px; overflow: hidden;
+  background: var(--weak);
+}
+.bay p { position: relative; z-index: 1; font-size: 10px; line-height: normal; color: var(--sub); white-space: nowrap; }
+.bay-free { background: var(--lime-soft); }
+.bay-free p { color: var(--ink); }
+.bay-img { position: absolute; left: -31px; top: 30px; width: 144px; height: 144px; object-fit: cover; }
+.bay-img.out { opacity: .3; }
+.bay-img.bay-ac { left: -6px; top: 56px; width: 94px; height: 94px; }
+
+.divider { height: 1px; background: var(--stroke); flex: none; }
+.amenities { display: flex; gap: 37px; justify-content: center; align-items: center; }
+.amenity { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.amenity img { width: 20px; height: 20px; }
+.amenity span { font-size: 12px; line-height: 16px; color: var(--sub); white-space: nowrap; }
+
+.pricing { display: flex; flex-direction: column; gap: 10px; }
+.pricing .row { display: flex; align-items: center; justify-content: space-between; white-space: nowrap; }
+.pricing .rate { font-weight: 500; font-size: 18px; line-height: 24px; letter-spacing: -0.27px; }
+.pricing .fee { font-weight: 500; font-size: 14px; line-height: 20px; letter-spacing: -0.084px; }
+.pricing .fine { font-size: 12px; line-height: 16px; color: var(--sub); }
+
+.search {
+  position: absolute; left: 19px; top: 66px; width: 354px; height: 50px;
+  display: flex; align-items: center; gap: 10px; padding: 14px;
+  background: var(--weak); border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,.06);
+}
+.search img { width: 20px; height: 20px; flex: none; }
+.search input {
+  flex: 1 0 0; min-width: 1px; border: 0; outline: 0; background: transparent;
+  font-size: 14px; line-height: 20px; letter-spacing: -0.084px; color: var(--ink);
+}
+.search input::placeholder { color: var(--sub); }
+
+/* ---------- Scan screen ---------- */
+.camera {
+  position: absolute; left: 0; top: -22px; bottom: 56px; width: 393px;
+  background: var(--night);
+  border-radius: 24px 24px 0 0;
+}
+.camera-view { position: absolute; left: 1px; top: 21px; bottom: 59px; width: 390px; overflow: hidden; }
+.camera-view img { position: absolute; left: -172.6px; top: calc(-326px - var(--scan-shift, 0px)); width: 735.2px; height: 1390px; max-width: none; }
+.dim { position: absolute; background: rgba(0,0,0,.5); }
+/* --scan-shift lifts the scan window on short phones so the ID sheet never covers it (0 at 852). */
+.dim-top { left: 1px; top: 21px; width: 390px; height: calc(268px - var(--scan-shift, 0px)); }
+.dim-bottom { left: 1px; top: calc(491px - var(--scan-shift, 0px)); bottom: 59px; width: 390px; }
+.dim-right { left: 297px; top: calc(289px - var(--scan-shift, 0px)); width: 94px; height: 202px; }
+.dim-left { left: 0; top: calc(289px - var(--scan-shift, 0px)); width: 94px; height: 202px; }
+.scan-copy { position: absolute; left: 19px; top: 90px; width: 354px; display: flex; flex-direction: column; gap: 6px; color: #fff; }
+.scan-copy .sub { color: #fff; }
+.scan-target { position: absolute; left: 95px; top: calc(289px - var(--scan-shift, 0px)); width: 202px; height: 202px; }
+.scan-target img { position: absolute; inset: -0.99%; width: 102%; height: 102%; }
+.scan-target .flash { position: absolute; inset: 0; background: var(--lime); opacity: 0; pointer-events: none; }
+.scan-target.is-hit .flash { animation: flash .5s ease-out; }
+.scan-target.is-hit img { animation: lock .5s var(--ease); }
+@keyframes flash { 0% { opacity: .35; } 100% { opacity: 0; } }
+@keyframes lock { 40% { transform: scale(.94); } }
+
+.scan-sheet { bottom: -82px; height: 277px; transition: bottom .45s var(--ease); }
+.screen-scan[data-filled="true"] .scan-sheet { bottom: 0; }
+.scan-sheet .identity { position: absolute; left: 19px; top: 20px; width: 354px; }
+.scan-sheet .identity .sub { color: var(--ink); }
+.charger-id {
+  position: absolute; left: 19px; top: 116px; width: 354px; height: 54px;
+  padding: 14px; border: 1px solid var(--stroke); border-radius: 12px; outline: 0;
+  background: #fff; text-align: center;
+  font-size: 24px; line-height: 24px; letter-spacing: -0.264px; color: var(--strong);
+  transition: border-color .2s;
+}
+.charger-id:focus { border-color: #c9cdd6; }
+.charger-id::placeholder { font-size: 20px; letter-spacing: -0.22px; color: rgba(14,18,27,.2); }
+.scan-sheet .action { position: absolute; left: 19px; top: 192px; width: 354px; }
+.screen-scan[data-filled="false"] .scan-sheet .action { opacity: 0; pointer-events: none; }
+
+/* ---------- Charging screen ---------- */
+/* --charge-k shrinks ring + stats on short phones so they clear the bottom sheet (1 at 852). */
+.charge-top { position: absolute; inset: 0; transform: scale(var(--charge-k, 1)); transform-origin: 50% 0; }
+.charge-bg { position: absolute; left: 0; top: -23px; bottom: 72px; width: 393px; background: var(--night); border-radius: 24px 24px 0 0; }
+.charge-title {
+  position: absolute; left: 19px; top: 63px; width: 354px; text-align: center;
+  font-weight: 500; font-size: 20px; line-height: 28px; white-space: nowrap;
+  background: linear-gradient(90deg, #fff 0%, #999 50.01%, #fff 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.ring { position: absolute; left: 60px; top: 118px; width: 272px; height: 272px; }
+.ring-outer { position: absolute; left: -66px; top: -11px; width: 390px; height: 489px; max-width: none; }
+.ring-inner { position: absolute; left: 17px; top: 17px; width: 238px; height: 238px; }
+
+@property --sweep { syntax: "<angle>"; inherits: false; initial-value: 360deg; }
+.ring-arc {
+  position: absolute; left: 17px; top: 17px; width: 230.731px; height: 238px;
+  --sweep: 360deg;
+  -webkit-mask: conic-gradient(from 180deg at 119px 119px, #000 var(--sweep), transparent 0);
+          mask: conic-gradient(from 180deg at 119px 119px, #000 var(--sweep), transparent 0);
+}
+.screen-charging.is-active .ring-arc { animation: sweep 1.6s var(--ease) both; }
+@keyframes sweep { from { --sweep: 0deg; } to { --sweep: 360deg; } }
+.ring-tick { position: absolute; left: 132px; top: 234px; width: 4px; height: 24px; }
+.ring-pct {
+  position: absolute; left: 0; top: 102px; width: 272px; text-align: center;
+  font-size: 64px; line-height: 68px; color: #fff; font-variant-numeric: tabular-nums;
+}
+
+.stats { position: absolute; left: 18px; width: 357px; display: flex; gap: 10px; justify-content: center; }
+.stat {
+  width: 152px; height: 74px; padding: 10px; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  white-space: nowrap;
+}
+.stat span { font-size: 14px; line-height: 20px; letter-spacing: -0.084px; color: #868686; }
+.stat strong { font-weight: 500; font-size: 20px; line-height: 28px; color: #fff; font-variant-numeric: tabular-nums; }
+
+.charge-sheet { bottom: 0; height: 267px; }
+.cost, .location { display: flex; flex-direction: column; gap: 2px; }
+.rule { display: block; width: 354px; height: 1px; }
+@property --veil { syntax: "<number>"; inherits: false; initial-value: 0; }

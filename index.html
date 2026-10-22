@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>EV Charger</title>
+  <meta name="description" content="Find a charger, scan it and start charging.">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="EV Charger">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=3">
+</head>
+<body>
+  <aside class="panel" aria-label="Prototype states">
+    <h1>EV Charger</h1>
+    <p class="panel-note">Figma: Concept-Designs · Section 1</p>
+    <h2>Station states</h2>
+    <ul id="variant-list">
+      <li><button data-variant="dc">DC available</button></li>
+      <li><button data-variant="acdc">AC + DC available</button></li>
+      <li><button data-variant="ac">AC available</button></li>
+      <li><button data-variant="acoff">AC disabled · DC available</button></li>
+      <li><button data-variant="dcoff">AC available · DC disabled</button></li>
+      <li><button data-variant="none">None available</button></li>
+    </ul>
+    <h2>Screens</h2>
+    <ul id="route-list">
+      <li><button data-route="map">Map</button></li>
+      <li><button data-route="detail">Station detail</button></li>
+      <li><button data-route="scan">Scan charger QR</button></li>
+      <li><button data-route="charging">Charging in progress</button></li>
+    </ul>
+  </aside>
+
+  <div class="stage">
+    <div class="phone" id="phone">
+
+      <!-- Map + station sheet (preview / detail) -->
+      <section class="screen screen-map" id="screen-map" data-variant="acdc" data-mode="preview">
+        <div class="map-layer" id="map-layer">
+          <img class="map-img" src="assets/map.png" alt="" draggable="false">
+          <div class="map-shade"></div>
+
+        <button class="pin pin-lg" style="left:107px;top:328px" data-pick="acdc" aria-label="SPD Charger Station, 2 available"><img src="assets/zap-pin-lg.svg" alt=""><span>2</span></button>
+        <button class="pin" style="left:17px;top:255px" data-pick="dc" aria-label="Sharz.net Charging Station, 1 available"><img src="assets/zap-pin.svg" alt=""><span>1</span></button>
+        <button class="pin" style="left:313px;top:390px" data-pick="ac" aria-label="Zorlu Center, 2 available"><img src="assets/zap-pin.svg" alt=""><span>2</span></button>
+        <button class="pin pin-off" style="left:273px;top:106px" data-pick="none" aria-label="Oncharge, none available"><img src="assets/zap-pin-off.svg" alt=""><span>0</span></button>
+        <button class="pin" style="left:365px;top:437px" data-pick="acoff" aria-label="Zes station, 2 available"><img src="assets/zap-pin.svg" alt=""><span>2</span></button>
+        </div>
+
+        <div class="sheet-group" id="sheet-group">
+          <div class="dock">
+            <div class="badges">
+              <span class="badge badge-avail"><img src="assets/zap-badge.svg" alt=""><span class="avail-text">2 of 4 available</span></span>
+              <span class="badge badge-spec">CCS1 · 150 kW</span>
+            </div>
+            <img class="charger-ac" src="assets/ac.png" alt="AC charger">
+          </div>
+          <img class="charger-dc" src="assets/dc.png" alt="DC charger">
+
+          <div class="sheet station-sheet" id="station-sheet">
+            <div class="sheet-inner">
+              <div class="identity" id="identity">
+                <p class="title">SPD Charger Station</p>
+                <p class="sub">Telsizler, Büyükdere St. No:100, 34394 Şişli/İstanbul</p>
+              </div>
+
+              <div class="preview-body">
+                <div class="price-row">
+                  <p class="price">$0.45 / kWh</p>
+                  <p class="sub">1.2 mi · 6 min away</p>
+                </div>
+                <button class="action" data-action="primary">Start Charging</button>
+              </div>
+
+              <div class="detail-body">
+                <div class="bays">
+                  <div class="bay"><p>Out of Order</p><img class="bay-img out" src="assets/dc-out.png" alt=""></div>
+                  <div class="bay"><p>In use</p><img class="bay-img" src="assets/dc.png" alt=""></div>
+                  <div class="bay bay-free"><p>Available</p><img class="bay-img bay-ac" src="assets/ac.png" alt=""></div>
+                  <div class="bay bay-free"><p>Available</p><img class="bay-img" src="assets/dc.png" alt="" style="left:-30.5px"></div>
+                </div>
+                <div class="divider"></div>
+                <div class="amenities">
+                  <div class="amenity"><img src="assets/coffee.svg" alt=""><span>Coffee</span></div>
+                  <div class="amenity"><img src="assets/bath.svg" alt=""><span>Restrooms</span></div>
+                  <div class="amenity"><img src="assets/wifi-amenity.svg" alt=""><span>Wi-Fi</span></div>
+                  <div class="amenity"><img src="assets/accessibility.svg" alt=""><span>Accessible</span></div>
+                </div>
+                <div class="divider"></div>
+                <div class="pricing">
+                  <div class="row"><span class="sub">Energy rate · taxes included</span><span class="rate">$0.45 / kWh</span></div>
+                  <div class="row"><span class="sub">Session fee</span><span class="fee">$0.00</span></div>
+                  <p class="fine">Idle fee: $0.40/min after 10 minutes fully charged.</p>
+                </div>
+                <button class="action" data-action="start">Start Charging</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="search">
+          <img src="assets/search.svg" alt="">
+          <input type="text" placeholder="Where do you want to charge?" aria-label="Search">
+          <img src="assets/sliders.svg" alt="">
+        </div>
+      </section>
+
+      <!-- Scan charger QR -->
+      <section class="screen screen-scan" id="screen-scan" data-filled="false">
+        <div class="camera">
+          <div class="camera-view"><img src="assets/camera.png" alt=""></div>
+          <div class="dim dim-top"></div>
+          <div class="dim dim-bottom"></div>
+          <div class="dim dim-right"></div>
+          <div class="dim dim-left"></div>
+          <div class="scan-copy">
+            <p class="title">Scan to start charging</p>
+            <p class="sub">Scan the QR code on the charger to start charhing your EV vehicle</p>
+          </div>
+          <button class="scan-target" id="scan-target" aria-label="Scan QR code"><img src="assets/scan-corners.svg" alt=""><span class="flash"></span></button>
+        </div>
+        <div class="sheet scan-sheet">
+          <div class="identity">
+            <p class="title">Or enter charger ID here</p>
+            <p class="sub">Scan the QR code on the charger to start charhing your EV vehicle</p>
+          </div>
+          <input class="charger-id" id="charger-id" type="text" placeholder="Enter charger ID" autocomplete="off" spellcheck="false" aria-label="Charger ID">
+          <button class="action" data-action="charge">Start Charging</button>
+        </div>
+      </section>
+
+      <!-- Charging in progress -->
+      <section class="screen screen-charging" id="screen-charging">
+        <div class="charge-bg"></div>
+        <div class="charge-top">
+        <p class="charge-title">Charging in progress</p>
+        <div class="ring">
+          <img class="ring-outer" src="assets/ring-outer.svg" alt="">
+          <img class="ring-inner" src="assets/ring-inner.svg" alt="">
+          <img class="ring-arc" src="assets/ring-arc.png" alt="">
+          <img class="ring-tick" src="assets/ring-tick.svg" alt="">
+          <p class="ring-pct"><span id="pct">68</span>%</p>
+        </div>
+        <div class="stats" style="top:407px">
+          <div class="stat"><span>Energy received</span><strong id="energy">27.72 kWh</strong></div>
+          <div class="stat"><span>Charging power</span><strong>92 kW</strong></div>
+        </div>
+        <div class="stats" style="top:491px">
+          <div class="stat"><span>Elapsed time</span><strong id="elapsed">18m 20s</strong></div>
+          <div class="stat"><span>Started at</span><strong>10:42 AM</strong></div>
+        </div>
+        </div>
+        <div class="sheet charge-sheet">
+          <div class="sheet-inner">
+            <div class="cost">
+              <p class="sub">Session cost</p>
+              <div class="price-row">
+                <p class="price" id="cost">$12.47</p>
+                <p class="sub">$0.45 / kWh</p>
+              </div>
+            </div>
+            <img class="rule" src="assets/divider.svg" alt="">
+            <div class="location">
+              <p class="sub">Location</p>
+              <div class="identity">
+                <p class="title">SPD Charger Station</p>
+                <p class="sub">Telsizler, Büyükdere St. No:100, 34394 Şişli/İstanbul</p>
+              </div>
+            </div>
+            <button class="action" data-action="end">End Charging</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="status-bar" id="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">
+          <img class="i-signal" src="assets/signal-dark.svg" alt="">
+          <img class="i-wifi" src="assets/wifi-dark.svg" alt="">
+          <img class="i-battery" src="assets/battery-dark.svg" alt="">
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js?v=3"></script>
+</body>
+</html>
