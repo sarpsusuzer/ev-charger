@@ -57,7 +57,9 @@ body {
 
 /* App mode: on a phone (or as a home-screen web app) the frame becomes the whole screen. */
 html.is-app, html.is-app body {
-  position: fixed; inset: 0;
+  /* --app-h is set by fit(); in a home-screen launch iOS under-reports the height. */
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--app-h, 100%);
   overflow: hidden;
   overscroll-behavior: none;
   background: #000;

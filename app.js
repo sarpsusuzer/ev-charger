@@ -284,6 +284,7 @@ $$('#route-list button').forEach(b => b.addEventListener('click', () => go(b.dat
 // the frame height, so top UI stays put and the sheets sit on the real bottom edge.
 const touch = matchMedia('(pointer: coarse)');
 const probe = $('#vp-probe');
+const standalone = matchMedia('(display-mode: standalone)');
 // Gap Figma leaves under each screen's bottom button; anything smaller than the
 // home-indicator inset gets lifted.
 const BOTTOM_GAP = { map: 36, detail: 31, scan: 31, charge: 18 };
@@ -295,7 +296,15 @@ function fit() {
   // more reliable than innerHeight on an iOS home-screen launch.
   const box = probe.getBoundingClientRect();
   const vw = box.width || innerWidth;
-  const vh = box.height || innerHeight;
+  let vh = box.height || innerHeight;
+  // iOS home-screen apps that draw under the status bar still lay out at
+  // screen height minus the status bar, leaving a black strip at the bottom.
+  // Standalone always fills the whole screen, so use the screen's own height.
+  if (standalone.matches || navigator.standalone) {
+    const portrait = innerHeight >= innerWidth;
+    vh = Math.max(vh, portrait ? screen.height : screen.width);
+  }
+  root.style.setProperty('--app-h', `${vh}px`);
   const app = vw <= 760;
   root.classList.toggle('is-app', app);
   root.classList.toggle('is-touch', app && touch.matches);
