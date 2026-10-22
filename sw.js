@@ -1,5 +1,5 @@
 // Offline cache for the home-screen app. Bump VERSION when files change.
-const VERSION = 'ev-charger-v4';
+const VERSION = 'ev-charger-v5';
 const PRECACHE = [
   './', 'index.html', 'styles.css', 'app.js', 'manifest.webmanifest',
   'icons/apple-touch-icon.png',

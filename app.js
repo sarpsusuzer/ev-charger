@@ -299,16 +299,19 @@ function fit() {
   const app = vw <= 760;
   root.classList.toggle('is-app', app);
   root.classList.toggle('is-touch', app && touch.matches);
-  // On a phone the real status bar sits above the page (status-bar-style
-  // "default"), so the design's 50px status strip is cut from the top.
-  const topCut = app && touch.matches ? 50 : 0;
+  // On a phone the real status bar replaces the design's 50px status strip.
+  // If iOS lays the app out below its status bar (safe-area top 0) the strip is
+  // cut; if it still draws under it (older installs), content moves down to
+  // clear the bar. Either way the search bar keeps its 16px gap below it.
+  const cs = getComputedStyle(probe);
+  const safeTop = app ? (fakeSafe ? fakeSafe[0] : parseFloat(cs.paddingTop) || 0) / (vw / 393) : 0;
+  const topCut = app && touch.matches ? 50 - safeTop : 0;
 
   let h = 852;
   let safeBottom = 0;
   if (app) {
     scale = vw / 393;
     h = vh / scale;
-    const cs = getComputedStyle(probe);
     safeBottom = (fakeSafe ? fakeSafe[1] : parseFloat(cs.paddingBottom) || 0) / scale;
   } else {
     scale = Math.min(1, (vh - 64) / 852);
